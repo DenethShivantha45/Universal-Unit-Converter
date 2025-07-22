@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Unit Converter</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a; 
+            overflow: hidden;
+            position: relative;
+        }
+
+        select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z' fill='%234a5568'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 0.8rem 0.8rem;
+        }
+
+        .smoke-particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
+            border-radius: 50%;
+            filter: blur(5px); /* Soft blur for smoke effect */
+            pointer-events: none; /* Ensure it doesn't interfere with clicks */
+            animation: fadeOutAndUp 3s forwards; /* Animation duration */
+            z-index: -1; /* Behind the converter box */
+        }
+
+        @keyframes fadeOutAndUp {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translate(-50%, -150%) scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-lg transform transition-all duration-300 hover:scale-105 border-4 border-blue-300 relative z-10">
+        <h1 class="text-4xl font-extrabold text-gray-800 mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-700">
+            Universal Unit Converter
+        </h1>
+
+        <div class="mb-6">
+            <label for="unitType" class="block text-gray-700 text-sm font-semibold mb-2">
+                Select Category:
+            </label>
+            <div class="relative">
+                <select
+                    id="unitType"
+                    class="block w-full bg-gray-100 border border-gray-300 text-gray-800 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 appearance-none transition duration-200 ease-in-out shadow-sm"
+                >
+                    <option value="temperature">Temperature</option>
+                    <option value="length">Length</option>
+                    <option value="weight">Weight</option>
+                    <option value="time">Time</option>
+                    <option value="dataStorage">Data Storage</option>
+                    <option value="area">Area</option>
+                    <option value="volume">Volume</option>
+                    <option value="speed">Speed</option>
+                    <option value="pressure">Pressure</option>
+                    <option value="energy">Energy</option>
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div>
+                <label for="inputValue" class="block text-gray-700 text-sm font-semibold mb-2">
+                    Value:
+                </label>
+                <input
+                    type="number"
+                    id="inputValue"
+                    class="shadow-sm appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 ease-in-out"
+                    placeholder="Enter value"
+                />
+            </div>
+
+            <div>
+                <label for="inputUnit" class="block text-gray-700 text-sm font-semibold mb-2">
+                    From Unit:
+                </label>
+                <div class="relative">
+                    <select
+                        id="inputUnit"
+                        class="block w-full bg-gray-100 border border-gray-300 text-gray-800 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 appearance-none transition duration-200 ease-in-out shadow-sm"
+                    >
+                    </select>
+                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <label for="outputUnit" class="block text-gray-700 text-sm font-semibold mb-2">
+                To Unit:
+            </label>
+            <div class="relative">
+                <select
+                    id="outputUnit"
+                    class="block w-full bg-gray-100 border border-gray-300 text-gray-800 py-3 px-4 pr-8 rounded-lg leading-tight focus:outline-none focus:bg-white focus:border-blue-500 appearance-none transition duration-200 ease-in-out shadow-sm"
+                >
+                </select>
+                <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div id="convertedValueDisplay" class="bg-blue-100 border border-blue-300 text-blue-800 px-6 py-4 rounded-xl text-center text-xl font-bold break-words shadow-inner transform transition-all duration-300 hover:scale-100">
+            <span class="text-gray-500">Enter a value to convert</span>
+        </div>
+
+        <div class="mt-6 text-center">
+            <button id="resetButton" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-75">
+                Reset
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const units = {
+            temperature: [
+                { value: 'celsius', label: 'Celsius' },
+                { value: 'fahrenheit', label: 'Fahrenheit' },
+                { value: 'kelvin', label: 'Kelvin' },
+            ],
+            length: [
+                { value: 'meters', label: 'Meters' },
+                { value: 'kilometers', label: 'Kilometers' },
+                { value: 'miles', label: 'Miles' },
+                { value: 'feet', label: 'Feet' },
+                { value: 'inches', label: 'Inches' },
+            ],
+            weight: [
+                { value: 'kilograms', label: 'Kilograms' },
+                { value: 'pounds', label: 'Pounds' },
+                { value: 'grams', label: 'Grams' },
+            ],
+            time: [
+                { value: 'milliseconds', label: 'Milliseconds' },
+                { value: 'seconds', label: 'Seconds' },
+                { value: 'minutes', label: 'Minutes' },
+                { value: 'hours', label: 'Hours' },
+                { value: 'days', label: 'Days' },
+                { value: 'weeks', label: 'Weeks' },
+                { value: 'years', label: 'Years' },
+            ],
+            dataStorage: [
+                { value: 'bits', label: 'Bits' },
+                { value: 'bytes', label: 'Bytes' },
+                { value: 'kilobytes', label: 'Kilobytes' },
+                { value: 'megabytes', label: 'Megabytes' },
+                { value: 'gigabytes', label: 'Gigabytes' },
+                { value: 'terabytes', label: 'Terabytes' },
+            ],
+            area: [
+                { value: 'squareMeters', label: 'Sq. Meters' },
+                { value: 'squareKilometers', label: 'Sq. Kilometers' },
+                { value: 'squareMiles', label: 'Sq. Miles' },
+                { value: 'squareFeet', label: 'Sq. Feet' },
+                { value: 'acres', label: 'Acres' },
+                { value: 'hectares', label: 'Hectares' },
+            ],
+            volume: [
+                { value: 'cubicMeters', label: 'Cubic Meters' },
+                { value: 'liters', label: 'Liters' },
+                { value: 'milliliters', label: 'Milliliters' },
+                { value: 'usGallons', label: 'US Gallons' },
+                { value: 'cubicFeet', label: 'Cubic Feet' },
+                { value: 'cubicInches', label: 'Cubic Inches' },
+            ],
+            speed: [
+                { value: 'metersPerSecond', label: 'Meters/Second' },
+                { value: 'kilometersPerHour', label: 'Kilometers/Hour' },
+                { value: 'milesPerHour', label: 'Miles/Hour' },
+                { value: 'knots', label: 'Knots' },
+            ],
+            pressure: [
+                { value: 'pascals', label: 'Pascals' },
+                { value: 'kilopascals', label: 'Kilopascals' },
+                { value: 'psi', label: 'PSI' },
+                { value: 'bar', label: 'Bar' },
+                { value: 'atmospheres', label: 'Atmospheres' },
+            ],
+            energy: [
+                { value: 'joules', label: 'Joules' },
+                { value: 'kilojoules', label: 'Kilojoules' },
+                { value: 'calories', label: 'Calories' },
+                { value: 'kilocalories', label: 'Kilocalories' },
+                { value: 'electronVolts', label: 'Electron Volts' },
+                { value: 'btu', label: 'BTU' },
+            ],
+        };
+
+        const unitTypeSelect = document.getElementById('unitType');
+        const inputValueInput = document.getElementById('inputValue');
+        const inputUnitSelect = document.getElementById('inputUnit');
+        const outputUnitSelect = document.getElementById('outputUnit');
+        const convertedValueDisplay = document.getElementById('convertedValueDisplay');
+        const resetButton = document.getElementById('resetButton');
+        const bodyElement = document.body;
+
+        function populateUnitDropdowns() {
+            const currentUnitType = unitTypeSelect.value;
+            const currentUnits = units[currentUnitType];
+
+            inputUnitSelect.innerHTML = '';
+            outputUnitSelect.innerHTML = '';
+
+            currentUnits.forEach(unit => {
+                const option = document.createElement('option');
+                option.value = unit.value;
+                option.textContent = unit.label;
+                inputUnitSelect.appendChild(option);
+            });
+
+            currentUnits.forEach(unit => {
+                const option = document.createElement('option');
+                option.value = unit.value;
+                option.textContent = unit.label;
+                outputUnitSelect.appendChild(option);
+            });
+
+            inputUnitSelect.value = currentUnits[0].value;
+            outputUnitSelect.value = currentUnits[1] ? currentUnits[1].value : currentUnits[0].value;
+        }
+
+        const convertTemperature = (value, fromUnit, toUnit) => {
+            let celsius;
+            if (fromUnit === 'celsius') celsius = value;
+            else if (fromUnit === 'fahrenheit') celsius = (value - 32) * 5 / 9;
+            else if (fromUnit === 'kelvin') celsius = value - 273.15;
+            else return null;
+
+            if (toUnit === 'celsius') return celsius;
+            else if (toUnit === 'fahrenheit') return (celsius * 9 / 5) + 32;
+            else if (toUnit === 'kelvin') return celsius + 273.15;
+            else return null;
+        };
+
+        const convertLength = (value, fromUnit, toUnit) => {
+            let meters;
+            if (fromUnit === 'meters') meters = value;
+            else if (fromUnit === 'kilometers') meters = value * 1000;
+            else if (fromUnit === 'miles') meters = value * 1609.34;
+            else if (fromUnit === 'feet') meters = value * 0.3048;
+            else if (fromUnit === 'inches') meters = value * 0.0254;
+            else return null;
+
+            if (toUnit === 'meters') return meters;
+            else if (toUnit === 'kilometers') return meters / 1000;
+            else if (toUnit === 'miles') return meters / 1609.34;
+            else if (toUnit === 'feet') return meters / 0.3048;
+            else if (toUnit === 'inches') return meters / 0.0254;
+            else return null;
+        };
+
+        const convertWeight = (value, fromUnit, toUnit) => {
+            let grams;
+            if (fromUnit === 'grams') grams = value;
+            else if (fromUnit === 'kilograms') grams = value * 1000;
+            else if (fromUnit === 'pounds') grams = value * 453.592;
+            else return null;
+
+            if (toUnit === 'grams') return grams;
+            else if (toUnit === 'kilograms') return grams / 1000;
+            else if (toUnit === 'pounds') return grams / 453.592;
+            else return null;
+        };
+
+        const convertTime = (value, fromUnit, toUnit) => {
+            let seconds;
+            if (fromUnit === 'milliseconds') seconds = value / 1000;
+            else if (fromUnit === 'seconds') seconds = value;
+            else if (fromUnit === 'minutes') seconds = value * 60;
+            else if (fromUnit === 'hours') seconds = value * 3600;
+            else if (fromUnit === 'days') seconds = value * 86400;
+            else if (fromUnit === 'weeks') seconds = value * 604800;
+            else if (fromUnit === 'years') seconds = value * 31536000;
+            else return null;
+
+            if (toUnit === 'milliseconds') return seconds * 1000;
+            else if (toUnit === 'seconds') return seconds;
+            else if (toUnit === 'minutes') return seconds / 60;
+            else if (toUnit === 'hours') return seconds / 3600;
+            else if (toUnit === 'days') return seconds / 86400;
+            else if (toUnit === 'weeks') return seconds / 604800;
+            else if (toUnit === 'years') return seconds / 31536000;
+            else return null;
+        };
+
+        const convertDataStorage = (value, fromUnit, toUnit) => {
+            let bytes;
+            if (fromUnit === 'bits') bytes = value / 8;
+            else if (fromUnit === 'bytes') bytes = value;
+            else if (fromUnit === 'kilobytes') bytes = value * 1024;
+            else if (fromUnit === 'megabytes') bytes = value * 1024 * 1024;
+            else if (fromUnit === 'gigabytes') bytes = value * 1024 * 1024 * 1024;
+            else if (fromUnit === 'terabytes') bytes = value * 1024 * 1024 * 1024 * 1024;
+            else return null;
+
+            if (toUnit === 'bits') return bytes * 8;
+            else if (toUnit === 'bytes') return bytes;
+            else if (toUnit === 'kilobytes') return bytes / 1024;
+            else if (toUnit === 'megabytes') return bytes / (1024 * 1024);
+            else if (toUnit === 'gigabytes') return bytes / (1024 * 1024 * 1024);
+            else if (toUnit === 'terabytes') return bytes / (1024 * 1024 * 1024 * 1024);
+            else return null;
+        };
+
+        const convertArea = (value, fromUnit, toUnit) => {
+            let sqMeters;
+            if (fromUnit === 'squareMeters') sqMeters = value;
+            else if (fromUnit === 'squareKilometers') sqMeters = value * 1000000;
+            else if (fromUnit === 'squareMiles') sqMeters = value * 2589988.11;
+            else if (fromUnit === 'squareFeet') sqMeters = value * 0.092903;
+            else if (fromUnit === 'acres') sqMeters = value * 4046.86;
+            else if (fromUnit === 'hectares') sqMeters = value * 10000;
+            else return null;
+
+            if (toUnit === 'squareMeters') return sqMeters;
+            else if (toUnit === 'squareKilometers') return sqMeters / 1000000;
+            else if (toUnit === 'squareMiles') return sqMeters / 2589988.11;
+            else if (toUnit === 'squareFeet') return sqMeters / 0.092903;
+            else if (toUnit === 'acres') return sqMeters / 4046.86;
+            else if (toUnit === 'hectares') return sqMeters / 10000;
+            else return null;
+        };
+
+        const convertVolume = (value, fromUnit, toUnit) => {
+            let cubicMeters;
+            if (fromUnit === 'cubicMeters') cubicMeters = value;
+            else if (fromUnit === 'liters') cubicMeters = value / 1000;
+            else if (fromUnit === 'milliliters') cubicMeters = value / 1000000;
+            else if (fromUnit === 'usGallons') cubicMeters = value * 0.00378541;
+            else if (fromUnit === 'cubicFeet') cubicMeters = value * 0.0283168;
+            else if (fromUnit === 'cubicInches') cubicMeters = value * 0.0000163871;
+            else return null;
+
+            if (toUnit === 'cubicMeters') return cubicMeters;
+            else if (toUnit === 'liters') return cubicMeters * 1000;
+            else if (toUnit === 'milliliters') return cubicMeters * 1000000;
+            else if (toUnit === 'usGallons') return cubicMeters / 0.00378541;
+            else if (toUnit === 'cubicFeet') return cubicMeters / 0.0283168;
+            else if (toUnit === 'cubicInches') return cubicMeters / 0.0000163871;
+            else return null;
+        };
+
+        const convertSpeed = (value, fromUnit, toUnit) => {
+            let mps;
+            if (fromUnit === 'metersPerSecond') mps = value;
+            else if (fromUnit === 'kilometersPerHour') mps = value * 1000 / 3600;
+            else if (fromUnit === 'milesPerHour') mps = value * 1609.34 / 3600;
+            else if (fromUnit === 'knots') mps = value * 0.514444;
+            else return null;
+
+            if (toUnit === 'metersPerSecond') return mps;
+            else if (toUnit === 'kilometersPerHour') return mps * 3600 / 1000;
+            else if (toUnit === 'milesPerHour') return mps * 3600 / 1609.34;
+            else if (toUnit === 'knots') return mps / 0.514444;
+            else return null;
+        };
+
+        const convertPressure = (value, fromUnit, toUnit) => {
+            let pascals;
+            if (fromUnit === 'pascals') pascals = value;
+            else if (fromUnit === 'kilopascals') pascals = value * 1000;
+            else if (fromUnit === 'psi') pascals = value * 6894.76;
+            else if (fromUnit === 'bar') pascals = value * 100000;
+            else if (fromUnit === 'atmospheres') pascals = value * 101325;
+            else return null;
+
+            if (toUnit === 'pascals') return pascals;
+            else if (toUnit === 'kilopascals') return pascals / 1000;
+            else if (toUnit === 'psi') return pascals / 6894.76;
+            else if (toUnit === 'bar') return pascals / 100000;
+            else if (toUnit === 'atmospheres') return pascals / 101325;
+            else return null;
+        };
+
+        const convertEnergy = (value, fromUnit, toUnit) => {
+            let joules;
+            if (fromUnit === 'joules') joules = value;
+            else if (fromUnit === 'kilojoules') joules = value * 1000;
+            else if (fromUnit === 'calories') joules = value * 4.184;
+            else if (fromUnit === 'kilocalories') joules = value * 4184;
+            else if (fromUnit === 'electronVolts') joules = value * 1.60218e-19;
+            else if (fromUnit === 'btu') joules = value * 1055.06;
+            else return null;
+
+            if (toUnit === 'joules') return joules;
+            else if (toUnit === 'kilojoules') return joules / 1000;
+            else if (toUnit === 'calories') return joules / 4.184;
+            else if (toUnit === 'kilocalories') return joules / 4184;
+            else if (toUnit === 'electronVolts') return joules / 1.60218e-19;
+            else if (toUnit === 'btu') return joules / 1055.06;
+            else return null;
+        };
+
+        function handleConvert() {
+            const value = parseFloat(inputValueInput.value);
+            const fromUnit = inputUnitSelect.value;
+            const toUnit = outputUnitSelect.value;
+            const currentUnitType = unitTypeSelect.value;
+
+            if (isNaN(value)) {
+                convertedValueDisplay.innerHTML = '<span class="text-gray-500">Enter a value to convert</span>';
+                return;
+            }
+
+            let result;
+            switch (currentUnitType) {
+                case 'temperature':
+                    result = convertTemperature(value, fromUnit, toUnit);
+                    break;
+                case 'length':
+                    result = convertLength(value, fromUnit, toUnit);
+                    break;
+                case 'weight':
+                    result = convertWeight(value, fromUnit, toUnit);
+                    break;
+                case 'time':
+                    result = convertTime(value, fromUnit, toUnit);
+                    break;
+                case 'dataStorage':
+                    result = convertDataStorage(value, fromUnit, toUnit);
+                    break;
+                case 'area':
+                    result = convertArea(value, fromUnit, toUnit);
+                    break;
+                case 'volume':
+                    result = convertVolume(value, fromUnit, toUnit);
+                    break;
+                case 'speed':
+                    result = convertSpeed(value, fromUnit, toUnit);
+                    break;
+                case 'pressure':
+                    result = convertPressure(value, fromUnit, toUnit);
+                    break;
+                case 'energy':
+                    result = convertEnergy(value, fromUnit, toUnit);
+                    break;
+                default:
+                    result = null;
+            }
+
+            if (result !== null) {
+                const outputUnitLabel = units[currentUnitType].find(unit => unit.value === toUnit)?.label;
+                convertedValueDisplay.innerHTML = `<span>${result.toFixed(4)} ${outputUnitLabel}</span>`;
+            } else {
+                convertedValueDisplay.innerHTML = '<span class="text-red-500">Conversion Error</span>';
+            }
+        }
+
+        function resetConverter() {
+            unitTypeSelect.value = 'temperature';
+            inputValueInput.value = '';
+            populateUnitDropdowns();
+            handleConvert();
+        }
+
+        bodyElement.addEventListener('mousemove', (e) => {
+            const smokeParticle = document.createElement('div');
+            smokeParticle.classList.add('smoke-particle');
+            const size = Math.random() * 30 + 10; // Random size between 10px and 40px
+            smokeParticle.style.width = `${size}px`;
+            smokeParticle.style.height = `${size}px`;
+            smokeParticle.style.left = `${e.clientX}px`;
+            smokeParticle.style.top = `${e.clientY}px`;
+            smokeParticle.style.animationDuration = `${Math.random() * 2 + 2}s`; // 2 to 4 seconds
+            smokeParticle.style.opacity = `${Math.random() * 0.4 + 0.4}`; // 0.4 to 0.8 initial opacity
+            bodyElement.appendChild(smokeParticle);
+
+            smokeParticle.addEventListener('animationend', () => {
+                smokeParticle.remove();
+            });
+        });
+
+        window.onload = function() {
+            populateUnitDropdowns();
+            handleConvert();
+        };
+
+        unitTypeSelect.addEventListener('change', () => {
+            populateUnitDropdowns();
+            handleConvert();
+        });
+
+        inputValueInput.addEventListener('input', handleConvert);
+        inputUnitSelect.addEventListener('change', handleConvert);
+        outputUnitSelect.addEventListener('change', handleConvert);
+        resetButton.addEventListener('click', resetConverter);
+    </script>
+</body>
+</html>
